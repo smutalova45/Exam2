@@ -63,12 +63,23 @@ func (c *tripCustomerRepo) GetList(req models.GetListRequest) (models.TripCustom
 		fmt.Println("error while counting", err.Error())
 		return models.TripCustomersResponse{}, err
 	}
-	query = `select t.id,t.trip_id,t.customer_id,t.created_at, 
-	c.id as customer_id,c.fullname, c.phone,c.email  from trip_customers as t inner join customers as c
-	on t.customer_id=c.id group by t.id,t.trip_id,t.customer_id,t.created_at,c.id,c.full_name,
-	c.phone`
+	query = `SELECT
+    t.id,
+    t.trip_id,
+    t.customer_id,
+    t.created_at,
+    c.id AS customer_id,
+    c.fullname,
+    c.phone,
+    c.email
+FROM
+    trip_customers AS t
+LEFT JOIN
+    customers AS c ON t.customer_id = c.id
+GROUP BY
+    t.id, t.trip_id, t.customer_id, t.created_at, c.id, c.full_name, c.phone`
 
-	query += `LIMIT $1 OFFSET $2`
+	query += ` LIMIT $1 OFFSET $2`
 	rows, err := c.db.Query(query, req.Limit, offset)
 	if err != nil {
 		return models.TripCustomersResponse{}, err
@@ -83,6 +94,7 @@ func (c *tripCustomerRepo) GetList(req models.GetListRequest) (models.TripCustom
 			&tc.CustomerData.ID,
 			&tc.CustomerData.FullName,
 			&tc.CustomerData.Phone,
+			&tc.CustomerData.Email,
 		); err != nil {
 			return models.TripCustomersResponse{}, err
 		}

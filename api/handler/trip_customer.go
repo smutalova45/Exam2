@@ -85,6 +85,7 @@ func (h Handler) GetTripCustomerList(w http.ResponseWriter, r *http.Request) {
 		limit, err = strconv.Atoi(v1)
 		if err != nil {
 			fmt.Println("limit", v1)
+			limit=10
 		}
 	}
 	resp, err := h.storage.TripCustomer().GetList(models.GetListRequest{

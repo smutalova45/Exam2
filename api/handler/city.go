@@ -86,6 +86,7 @@ func (h Handler) GetCityList(w http.ResponseWriter, r *http.Request) {
 		limit, err = strconv.Atoi(v1)
 		if err != nil {
 			fmt.Println("limit", v1)
+			limit=10
 		}
 	}
 	v2 := values.Get("search")

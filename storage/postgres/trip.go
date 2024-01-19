@@ -68,7 +68,7 @@ func (c *tripRepo) GetList(req models.GetListRequest) (models.TripsResponse, err
 		countQuery, query string
 		page              = req.Page
 		offset            = (page - 1) * req.Limit
-		search string
+		search            string
 	)
 	countQuery = `select count(1) from trips`
 	if search != "" {
@@ -82,7 +82,7 @@ func (c *tripRepo) GetList(req models.GetListRequest) (models.TripsResponse, err
     t.id AS trip_id,
     t.trip_number_id,
     t.from_city_id,
-    from_city.id AS from_city_id,
+    from_city.id,
     from_city.name AS from_city_name,
     from_city.created_at AS from_city_created_at,
     t.to_city_id,
@@ -121,13 +121,12 @@ LEFT JOIN
 	query += ` LIMIT $1 OFFSET $2 `
 	rows, err := c.db.Query(query, req.Limit, offset)
 	if err != nil {
-		fmt.Println("error:->",err.Error())
+		fmt.Println("error:->", err.Error())
 		return models.TripsResponse{}, err
 	}
 
-	
 	for rows.Next() {
-		
+
 		trip := models.Trip{}
 		if err = rows.Scan(
 			&trip.ID,
@@ -145,8 +144,13 @@ LEFT JOIN
 			&trip.DriverData.FullName,
 			&trip.DriverData.Phone,
 			&trip.DriverData.FromCityID,
+			&trip.DriverData.FromCityData.ID, 
+			&trip.DriverData.FromCityData.Name,
+			&trip.DriverData.FromCityData.CreatedAt,
 			&trip.DriverData.ToCityID,
-			&trip.DriverData.CreatedAt,
+			&trip.DriverData.ToCityData.ID,
+			&trip.DriverData.ToCityData.Name,
+			&trip.DriverData.ToCityData.CreatedAt,
 			&trip.Price,
 			&trip.CreatedAt,
 		); err != nil {

@@ -18,8 +18,11 @@ func (h Handler) Trip(w http.ResponseWriter, r *http.Request) {
 		values := r.URL.Query()
 		if _, ok := values["id"]; !ok {
 			h.GetTripList(w, r)
+			
 		} else {
 			h.GetTripByID(w, r)
+			
+			
 		}
 	case http.MethodPut:
 		h.UpdateTrip(w, r)
@@ -86,6 +89,7 @@ func (h Handler) GetTripList(w http.ResponseWriter, r *http.Request) {
 		limit, err = strconv.Atoi(v1)
 		if err != nil {
 			fmt.Println("limit", v1)
+			limit=10
 		}
 	}
 	v2 := values.Get("search")
